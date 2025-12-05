@@ -1,5 +1,6 @@
 services:
   kokoro:
+    container_name: kokoro
     image: ghcr.io/remsky/kokoro-fastapi-gpu:latest
     ports:
       - "8880:8880"
@@ -7,6 +8,7 @@ services:
       - agent_network
 
   livekit:
+    container_name: livekit
     image: livekit/livekit-server:latest
     ports:
       - "7880:7880"
@@ -16,6 +18,7 @@ services:
       - agent_network
 
   whisper:
+    container_name: whisper
     build:
       context: ./whisper
     volumes:
@@ -26,6 +29,7 @@ services:
       - agent_network
 
   agent:
+    container_name: voice-agent
     build:
       context: ./agent
     environment:
@@ -51,6 +55,7 @@ services:
       - agent_network
 
   frontend:
+    container_name: voice-fe
     build:
       context: ./voice-assistant-frontend
     ports:
