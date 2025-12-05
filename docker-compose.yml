@@ -34,6 +34,9 @@ services:
     container_name: voice-agent
     build:
       context: ./agent
+    volumes:
+      - ./agent/myagent.py:/home/appuser/myagent.py
+      - ./agent/docs:/home/appuser/docs
     environment:
       - LIVEKIT_HOST=ws://livekit:7880
       - LIVEKIT_API_KEY=devkey

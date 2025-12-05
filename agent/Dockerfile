@@ -37,7 +37,5 @@ WORKDIR /home/appuser
 COPY requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
 
-COPY . .
-
 ENTRYPOINT ["python", "myagent.py"]
 CMD ["start"]
