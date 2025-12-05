@@ -55,9 +55,29 @@ async def rag_lookup(query: str) -> str:
 
 class LocalAgent(Agent):
     def __init__(self) -> None:
-        stt = openai.STT(base_url="http://whisper:80/v1", model="Systran/faster-whisper-small")
-        llm = openai.LLM(base_url="http://ollama:11434/v1", model="gemma3:4b", timeout=30)
-        tts = groq.TTS(base_url="http://kokoro:8880/v1", model="kokoro", voice="af_nova")
+        # Read service endpoints and model names from environment with sensible defaults.
+        # Environment variables supported:
+        # - STT_BASE_URL, STT_MODEL
+        # - LLM_BASE_URL, LLM_MODEL, LLM_TIMEOUT
+        # - TTS_BASE_URL, TTS_MODEL, TTS_VOICE
+        stt_base = os.getenv("STT_BASE_URL", "http://whisper:80/v1")
+        stt_model = os.getenv("STT_MODEL", "Systran/faster-whisper-small")
+
+        llm_base = os.getenv("LLM_BASE_URL", "http://ollama:11434/v1")
+        llm_model = os.getenv("LLM_MODEL", "gemma3:4b")
+        # safe parse for timeout (seconds)
+        try:
+            llm_timeout = int(os.getenv("LLM_TIMEOUT", "30"))
+        except (TypeError, ValueError):
+            llm_timeout = 30
+
+        tts_base = os.getenv("TTS_BASE_URL", "http://kokoro:8880/v1")
+        tts_model = os.getenv("TTS_MODEL", "kokoro")
+        tts_voice = os.getenv("TTS_VOICE", "af_nova")
+
+        stt = openai.STT(base_url=stt_base, model=stt_model)
+        llm = openai.LLM(base_url=llm_base, model=llm_model, timeout=llm_timeout)
+        tts = groq.TTS(base_url=tts_base, model=tts_model, voice=tts_voice)
         vad_inst = silero.VAD.load()
         super().__init__(
             instructions="""

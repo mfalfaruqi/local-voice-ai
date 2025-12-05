@@ -19,27 +19,11 @@ services:
     build:
       context: ./whisper
     volumes:
-      - whisper-data:/data
+      - ./data/whisper/data:/data
     ports:
       - "11435:80"
     networks:
       - agent_network
-
-  ollama:
-    build:
-      context: ./ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama:/root/.ollama
-    networks:
-      - agent_network
-    deploy:
-      resources:
-        limits:
-          memory: 8G
-        reservations:
-          memory: 6G
 
   agent:
     build:
@@ -51,11 +35,18 @@ services:
       - LIVEKIT_AGENT_PORT=7880
       - OPENAI_API_KEY=no-key-needed
       - GROQ_API_KEY=no-key-needed
+      - STT_BASE_URL=http://whisper:80/v1
+      - STT_MODEL=Systran/faster-whisper-small
+      - LLM_BASE_URL=http://ollama:11434/v1
+      - LLM_MODEL=gemma3:4b
+      - LLM_TIMEOUT=30
+      - TTS_BASE_URL=http://kokoro:8880/v1
+      - TTS_MODEL=kokoro
+      - TTS_VOICE=af_nova
     depends_on:
       - livekit
       - kokoro
       - whisper
-      - ollama
     networks:
       - agent_network
 
@@ -76,7 +67,6 @@ services:
       - agent_network
 
 volumes:
-  ollama:
   whisper-data:
 
 networks:
