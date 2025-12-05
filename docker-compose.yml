@@ -13,7 +13,9 @@ services:
     ports:
       - "7880:7880"
       - "7881:7881"
-    command: --dev --bind "0.0.0.0"
+    command: --dev --bind "0.0.0.0" --config /config/livekit.yaml
+    volumes:
+      - ./livekit.yaml:/config/livekit.yaml
     networks:
       - agent_network
 
