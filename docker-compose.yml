@@ -1,11 +1,13 @@
 services:
   kokoro:
     container_name: kokoro
+    profiles:
+      - kokoro
     image: ghcr.io/remsky/kokoro-fastapi-gpu:latest
+    volumes:
+      - ./data/kokoro/api:/app/api
     ports:
       - "8880:8880"
-    networks:
-      - agent_network
 
   livekit:
     container_name: livekit
@@ -16,8 +18,6 @@ services:
     command: --dev --bind "0.0.0.0" --config /config/livekit.yaml
     volumes:
       - ./livekit.yaml:/config/livekit.yaml
-    networks:
-      - agent_network
 
   whisper:
     container_name: whisper
@@ -27,8 +27,24 @@ services:
       - ./data/whisper/data:/data
     ports:
       - "11435:80"
-    networks:
-      - agent_network
+  
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    profiles:
+      - ollama
+    ports:
+      - 11434:11434
+    volumes:
+      - ./data/ollama/data:/root/.ollama
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, compute, utility]
 
   agent:
     container_name: voice-agent
@@ -54,10 +70,7 @@ services:
       - TTS_VOICE=af_nova
     depends_on:
       - livekit
-      - kokoro
       - whisper
-    networks:
-      - agent_network
 
   frontend:
     container_name: voice-fe
@@ -73,12 +86,3 @@ services:
       - NEXT_PUBLIC_LIVEKIT_API_KEY=devkey
     depends_on:
       - livekit
-    networks:
-      - agent_network
-
-volumes:
-  whisper-data:
-
-networks:
-  agent_network:
-    driver: bridge

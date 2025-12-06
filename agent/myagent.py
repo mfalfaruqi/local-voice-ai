@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from livekit.agents import JobContext, WorkerOptions, cli
 from livekit.agents.voice import Agent, AgentSession
-from livekit.plugins import openai, silero, groq
+from livekit.plugins import openai, silero
 from livekit.agents import ChatContext, ChatMessage
 from sentence_transformers import SentenceTransformer
 import faiss
@@ -77,7 +77,7 @@ class LocalAgent(Agent):
 
         stt = openai.STT(base_url=stt_base, model=stt_model)
         llm = openai.LLM(base_url=llm_base, model=llm_model, timeout=llm_timeout)
-        tts = groq.TTS(base_url=tts_base, model=tts_model, voice=tts_voice)
+        tts = openai.TTS(base_url=tts_base, model=tts_model, voice=tts_voice)
         vad_inst = silero.VAD.load()
         super().__init__(
             instructions="""
