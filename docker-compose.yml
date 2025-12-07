@@ -54,7 +54,7 @@ services:
       - ./agent/myagent.py:/home/appuser/myagent.py
       - ./agent/docs:/home/appuser/docs
     environment:
-      - LIVEKIT_HOST=ws://livekit:7880
+      - LIVEKIT_URL=ws://livekit:7880
       - LIVEKIT_API_KEY=devkey
       - LIVEKIT_API_SECRET=secret
       - LIVEKIT_AGENT_PORT=7880

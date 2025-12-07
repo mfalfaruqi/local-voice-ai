@@ -6,8 +6,8 @@ from livekit.agents import JobContext, WorkerOptions, cli
 from livekit.agents.voice import Agent, AgentSession
 from livekit.plugins import openai, silero
 from livekit.agents import ChatContext, ChatMessage
-from sentence_transformers import SentenceTransformer
-import faiss
+# from sentence_transformers import SentenceTransformer
+# import faiss
 import asyncio
 from functools import partial
 
@@ -17,7 +17,7 @@ logger = logging.getLogger("local-agent")
 logger.setLevel(logging.INFO)
 
 # load a small embedding model once
-embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+# embed_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # load all your docs
 docs = []
@@ -28,28 +28,28 @@ if os.path.exists(docs_dir):
             docs.append(f.read())
 
 # embed and build FAISS index
-if docs:
-    embs = embed_model.encode(docs, show_progress_bar=False)
-    dim = embs.shape[1]
-    index = faiss.IndexFlatL2(dim)
-    index.add(embs)
-else:
-    dim = embed_model.get_sentence_embedding_dimension()
-    index = faiss.IndexFlatL2(dim)
-    logger.warning("No documents found in docs directory. RAG will return empty context.")
+# if docs:
+#     embs = embed_model.encode(docs, show_progress_bar=False)
+#     dim = embs.shape[1]
+#     index = faiss.IndexFlatL2(dim)
+#     index.add(embs)
+# else:
+#     dim = embed_model.get_sentence_embedding_dimension()
+#     index = faiss.IndexFlatL2(dim)
+#     logger.warning("No documents found in docs directory. RAG will return empty context.")
 
 async def rag_lookup(query: str) -> str:
-    """Perform RAG lookup for a given query"""
-    loop = asyncio.get_running_loop()
+    # """Perform RAG lookup for a given query"""
+    # loop = asyncio.get_running_loop()
 
-    q_emb = await loop.run_in_executor(None, lambda: embed_model.encode([query]))
-    D, I = await loop.run_in_executor(None, lambda: index.search(q_emb, min(3, index.ntotal)))
+    # q_emb = await loop.run_in_executor(None, lambda: embed_model.encode([query]))
+    # D, I = await loop.run_in_executor(None, lambda: index.search(q_emb, min(3, index.ntotal)))
 
     ctx = ""
-    if index.ntotal > 0:
-        ctx = "\n\n---\n\n".join(docs[i] for i in I[0])
+    # if index.ntotal > 0:
+    #     ctx = "\n\n---\n\n".join(docs[i] for i in I[0])
 
-    print(f"RAG content: {ctx}")
+    # print(f"RAG content: {ctx}")
 
     return ctx
 
